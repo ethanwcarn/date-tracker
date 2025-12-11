@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Tracker - Calendar</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h2>Date Tracker</h2>
+            <div class="nav-links">
+                <a href="/dashboard" class="nav-link">Dashboard</a>
+                <a href="/calendar" class="nav-link active">Calendar</a>
+                <button id="logout-btn" class="btn btn-secondary">Logout</button>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="calendar-header">
+            <h1>Calendar</h1>
+            <div class="calendar-controls">
+                <button id="prev-month" class="btn btn-secondary">&lt; Previous</button>
+                <h2 id="current-month-year"></h2>
+                <button id="next-month" class="btn btn-secondary">Next &gt;</button>
+            </div>
+        </div>
+        
+        <div id="calendar" class="calendar-grid"></div>
+    </div>
+    
+    <!-- Name Prompt Modal -->
+    <div id="name-modal" class="modal">
+        <div class="modal-content">
+            <h2>Complete Your Profile</h2>
+            <p>Please add your first and last name to personalize your experience.</p>
+            <form id="name-form">
+                <div class="form-group">
+                    <label for="profile-first-name">First Name *</label>
+                    <input type="text" id="profile-first-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="profile-last-name">Last Name *</label>
+                    <input type="text" id="profile-last-name" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/calendar.js') }}"></script>
+</body>
+</html>
+
