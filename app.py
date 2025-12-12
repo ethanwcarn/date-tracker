@@ -506,7 +506,7 @@ def uploaded_file(filename):
     return send_from_directory('static/images', filename)
 
 if __name__ == '__main__':
-    # Only run in debug mode if explicitly set
-    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
-    app.run(debug=debug_mode, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    # Enable debug mode for development to auto-reload templates
+    app.config['TEMPLATES_AUTO_RELOAD'] = True
+    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
 

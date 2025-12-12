@@ -68,11 +68,11 @@ function displayDates() {
     
     document.getElementById('future-dates').innerHTML = futureDates.length > 0
         ? futureDates.map(d => createDateCard(d)).join('')
-        : '<p>No future dates</p>';
+        : '<div class="list-group-item border-0 p-3 text-center text-secondary">No future dates</div>';
     
     document.getElementById('past-dates').innerHTML = pastDates.length > 0
         ? pastDates.map(d => createDateCard(d)).join('')
-        : '<p>No past dates</p>';
+        : '<div class="list-group-item border-0 p-3 text-center text-secondary">No past dates</div>';
 }
 
 // Create date card
@@ -85,27 +85,31 @@ function createDateCard(date) {
     });
     
     const ratingStars = date.rating ? '⭐'.repeat(date.rating) : 'No rating';
-    
     const addedBy = date.created_by_name ? `Added by ${date.created_by_name}` : '';
     
     return `
-        <div class="date-card" onclick="openDateModal(${date.id})">
-            <h3>${date.activity_name}</h3>
-            <div class="date-info">
-                <span>📍 ${date.location}</span>
-                <span>📅 ${formattedDate}</span>
-                ${date.rating ? `<span class="rating">${ratingStars}</span>` : ''}
-                ${date.photos && date.photos.length > 0 ? `<span>📷 ${date.photos.length} photo(s)</span>` : ''}
+        <a href="javascript:;" class="list-group-item list-group-item-action border-0 d-flex p-3 mb-2 bg-gray-100 border-radius-lg cursor-pointer" onclick="openDateModal(${date.id})">
+            <div class="d-flex flex-column w-100">
+                <div class="d-flex justify-content-between mb-1">
+                    <h6 class="mb-1 text-dark">${date.activity_name}</h6>
+                    <small class="text-secondary">${formattedDate}</small>
+                </div>
+                <p class="mb-1 text-sm text-dark">
+                    <i class="material-symbols-rounded text-sm opacity-5 me-1">location_on</i>${date.location}
+                    ${date.rating ? ` | <span class="text-warning">${ratingStars}</span>` : ''}
+                    ${date.photos && date.photos.length > 0 ? ` | <i class="material-symbols-rounded text-sm opacity-5">photo</i> ${date.photos.length}` : ''}
+                </p>
+                ${addedBy ? `<small class="text-secondary text-xs">${addedBy}</small>` : ''}
             </div>
-            ${addedBy ? `<div class="date-meta">${addedBy}</div>` : ''}
-        </div>
+        </a>
     `;
 }
 
 // Open date modal
 async function openDateModal(dateId = null) {
     currentDateId = dateId;
-    const modal = document.getElementById('date-modal');
+    const modalElement = document.getElementById('date-modal');
+    const modal = new bootstrap.Modal(modalElement);
     const form = document.getElementById('date-form');
     const deleteBtn = document.getElementById('delete-date-btn');
     const photosSection = document.getElementById('photos-section');
@@ -155,24 +159,10 @@ async function openDateModal(dateId = null) {
         document.getElementById('photos-container').innerHTML = '';
     }
     
-    modal.style.display = 'block';
+    modal.show();
 }
 
-// Close modal
-document.querySelector('.close').addEventListener('click', () => {
-    document.getElementById('date-modal').style.display = 'none';
-});
-
-document.getElementById('cancel-btn').addEventListener('click', () => {
-    document.getElementById('date-modal').style.display = 'none';
-});
-
-window.onclick = (event) => {
-    const modal = document.getElementById('date-modal');
-    if (event.target === modal) {
-        modal.style.display = 'none';
-    }
-};
+// Modal close handled by Bootstrap
 
 // Date form submit
 document.getElementById('date-form').addEventListener('submit', async (e) => {
@@ -215,7 +205,9 @@ document.getElementById('date-form').addEventListener('submit', async (e) => {
             }
         }
         
-        document.getElementById('date-modal').style.display = 'none';
+        const modalElement = document.getElementById('date-modal');
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        if (modal) modal.hide();
         loadDates();
     } catch (error) {
         alert('Error saving date: ' + error.message);
@@ -287,8 +279,8 @@ document.getElementById('upload-photo-btn').addEventListener('click', async () =
 function displayPhotos(photos) {
     const container = document.getElementById('photos-container');
     container.innerHTML = photos.map(photo => `
-        <div class="photo-item">
-            <img src="/${photo.filepath}" alt="${photo.filename}">
+        <div class="col-md-4 mb-3">
+            <img src="/${photo.filepath}" alt="${photo.filename}" class="img-fluid border-radius-lg">
         </div>
     `).join('');
 }
@@ -309,8 +301,22 @@ document.getElementById('clear-filters').addEventListener('click', () => {
 });
 
 // Add date button
-document.getElementById('add-date-btn').addEventListener('click', () => {
+document.getElementById('add-date-btn')?.addEventListener('click', () => {
     openDateModal(null);
+});
+
+// Search functionality
+document.getElementById('search-input')?.addEventListener('input', (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    const allDateCards = document.querySelectorAll('.list-group-item');
+    allDateCards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        if (text.includes(searchTerm)) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
 });
 
 // Check and prompt for name if missing
@@ -321,7 +327,9 @@ async function checkUserProfile() {
             const user = await response.json();
             if (!user.has_name) {
                 // Show name prompt modal
-                document.getElementById('name-modal').style.display = 'block';
+                const nameModalElement = document.getElementById('name-modal');
+                const nameModal = new bootstrap.Modal(nameModalElement);
+                nameModal.show();
             } else {
                 // Update welcome message with user's name
                 updateWelcomeMessage(user);
@@ -377,7 +385,9 @@ document.getElementById('name-form').addEventListener('submit', async (e) => {
         
         if (response.ok) {
             const data = await response.json();
-            document.getElementById('name-modal').style.display = 'none';
+            const nameModalElement = document.getElementById('name-modal');
+            const nameModal = bootstrap.Modal.getInstance(nameModalElement);
+            if (nameModal) nameModal.hide();
             // Update welcome message with new name
             updateWelcomeMessage({
                 first_name: data.first_name,

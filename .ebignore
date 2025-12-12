@@ -1,25 +1,48 @@
-.venv/
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
 venv/
 env/
 ENV/
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-*.so
-*.db
-*.sqlite
-.git/
-.gitignore
-.env
-.DS_Store
-*.log
-test_connection.py
+.venv
+
+# Local Python directories
+.local/
+
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
 
+# OS
+.DS_Store
+Thumbs.db
 
+# Git
+.git/
+.gitignore
+
+# Material Dashboard source (we only need the compiled files in static/)
+material-dashboard/
+material-dashboard-free-master.zip
+
+# Documentation (not needed for deployment)
+*.md
+!README.md
+
+# Deployment scripts
+deploy.sh
+setup_git.ps1
+test_connection.py
+
+# Elastic Beanstalk
+.elasticbeanstalk/
